@@ -10,13 +10,17 @@ import java.util.concurrent.TimeUnit;
  */
 public class TestService implements ITestService {
 
-//    private final Log log = LogFactory.get(getClass());
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     @Override
     public String say(String what) {
         String result = "say " + what;
         log.debug(result);
+        try {
+            TimeUnit.SECONDS.sleep(8);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return result;
     }
 

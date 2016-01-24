@@ -7,17 +7,17 @@ public class ResponseMessage implements IMessage {
 
     private String seq;
 
-    private int resultCode;
+    private ResultCode resultCode;
 
     private String errorMessage;
 
     private Object responseObject;
 
-    public int getResultCode() {
+    public ResultCode getResultCode() {
         return resultCode;
     }
 
-    public void setResultCode(int resultCode) {
+    public void setResultCode(ResultCode resultCode) {
         this.resultCode = resultCode;
     }
 

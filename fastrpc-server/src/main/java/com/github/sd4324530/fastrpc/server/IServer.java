@@ -30,6 +30,14 @@ public interface IServer extends Closeable {
     IServer threadSize(int threadSize);
 
     /**
+     * 设置超时时间,单位毫秒
+     *
+     * @param timeout 超时时间
+     * @return RPC服务端接口对象
+     */
+    IServer timeout(long timeout);
+
+    /**
      * 注册RPC服务
      *
      * @param name   服务名称
