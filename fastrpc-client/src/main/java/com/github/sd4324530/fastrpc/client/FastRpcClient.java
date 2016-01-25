@@ -102,6 +102,10 @@ public final class FastRpcClient implements IClient {
                 requestMessage.setArgsClassTypes(argsClass);
             }
             final ResponseMessage responseMessage = this.invoke(requestMessage);
+            if (null == responseMessage) {
+                log.warn("RPC调用返回null....");
+                return null;
+            }
             if (responseMessage.getResultCode() != ResultCode.SUCCESS) {
                 throw new RuntimeException(responseMessage.getErrorMessage());
             }
@@ -116,6 +120,9 @@ public final class FastRpcClient implements IClient {
             return this.channel.read(ResponseMessage.class);
         } catch (final Exception e) {
             log.error("Rpc调用异常:", e);
+            if(e instanceof ExecutionException) {
+                log.warn("");
+            }
             final ResponseMessage responseMessage = new ResponseMessage();
             responseMessage.setSeq(requestMessage.getSeq());
             responseMessage.setResultCode(ResultCode.OTHER);

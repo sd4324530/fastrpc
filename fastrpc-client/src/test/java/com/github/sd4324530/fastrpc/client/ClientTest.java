@@ -24,11 +24,15 @@ public class ClientTest {
                     client.connect(new InetSocketAddress("127.0.0.1", 4567));
                     TestService service = client.getService(TestService.class);
                     while(true) {
-                        System.out.println(service.say("Hello"));
+                        String hello = service.say("Hello");
+                        if(null == hello) {
+                            System.out.println("null");
+                        } else {
+                            System.out.println(hello);
+                        }
                         TimeUnit.SECONDS.sleep(1);
                     }
                 } catch (Exception e) {
-                    System.out.println("错误");
                     e.printStackTrace();
                 }
             }).start();
