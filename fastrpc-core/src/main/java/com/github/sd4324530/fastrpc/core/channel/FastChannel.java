@@ -1,5 +1,6 @@
 package com.github.sd4324530.fastrpc.core.channel;
 
+import com.github.sd4324530.fastrpc.core.exception.FastrpcException;
 import com.github.sd4324530.fastrpc.core.message.IMessage;
 import com.github.sd4324530.fastrpc.core.serializer.ISerializer;
 import org.slf4j.Logger;
@@ -43,6 +44,11 @@ public class FastChannel implements IChannel {
         return this.channel.isOpen();
     }
 
+//    @Override
+//    public SocketAddress remoteAddress() throws IOException {
+//        return this.channel.getRemoteAddress();
+//    }
+
     @Override
     public <M extends IMessage> M read(Class<M> messageClazz) {
         if (this.isOpen()) {
@@ -61,7 +67,15 @@ public class FastChannel implements IChannel {
                 message.flip();
                 return this.serializer.encoder(message.array(), messageClazz);
             } catch (TimeoutException e) {
-                throw new RuntimeException(e);
+                throw new FastrpcException(e);
+            } catch (ExecutionException e) {
+                throw new FastrpcException(e);
+//                if(this.channel.isOpen()) {
+//                    try {
+//                        this.channel.close();
+//                    } catch (IOException ignored) {
+//                    }
+//                }
             } catch (Exception e) {
                 log.error("读取数据异常", e);
             }
@@ -86,7 +100,7 @@ public class FastChannel implements IChannel {
             }
         } catch (ExecutionException e) {
             log.warn("连接断了....");
-            throw new RuntimeException(e);
+            throw new FastrpcException(e);
         } catch (Exception e) {
             log.error("写出数据异常", e);
             log.warn("open:{}", this.isOpen());

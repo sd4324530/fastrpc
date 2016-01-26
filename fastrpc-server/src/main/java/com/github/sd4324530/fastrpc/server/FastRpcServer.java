@@ -2,6 +2,7 @@ package com.github.sd4324530.fastrpc.server;
 
 import com.github.sd4324530.fastrpc.core.channel.FastChannel;
 import com.github.sd4324530.fastrpc.core.channel.IChannel;
+import com.github.sd4324530.fastrpc.core.exception.FastrpcException;
 import com.github.sd4324530.fastrpc.core.message.RequestMessage;
 import com.github.sd4324530.fastrpc.core.message.ResponseMessage;
 import com.github.sd4324530.fastrpc.core.message.ResultCode;
@@ -111,8 +112,12 @@ public final class FastRpcServer implements IServer {
             @Override
             public void completed(AsynchronousSocketChannel result, Void attachment) {
                 channel.accept(null, this);
+                String localAddress = null;
+                String remoteAddress = null;
                 try {
-                    log.debug("创建连接 {} <-> {}", result.getLocalAddress(), result.getRemoteAddress());
+                    localAddress = result.getLocalAddress().toString();
+                    remoteAddress = result.getRemoteAddress().toString();
+                    log.debug("创建连接 {} <-> {}", localAddress, remoteAddress);
                 } catch (IOException e) {
                     log.error("", e);
                 }
@@ -120,6 +125,7 @@ public final class FastRpcServer implements IServer {
                 while (channel.isOpen()) {
                     handler(channel);
                 }
+                log.debug("断开连接 {} <-> {}", localAddress, remoteAddress);
             }
 
             @Override
@@ -155,7 +161,15 @@ public final class FastRpcServer implements IServer {
                 channel.write(responseMessage);
             }
         } catch (Exception e) {
-            log.error("", e);
+//            log.error("", e);
+            if(e instanceof FastrpcException) {
+                if(channel.isOpen()) {
+                    try {
+                        channel.close();
+                    } catch (IOException ignored) {
+                    }
+                }
+            }
         }
     }
 }

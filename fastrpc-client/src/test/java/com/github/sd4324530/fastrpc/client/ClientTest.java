@@ -21,13 +21,11 @@ public class ClientTest {
         for(int i = 0;i < 1;i++) {
             new Thread(() -> {
                 try (IClient client = new FastRpcClient()) {
-                    client.connect(new InetSocketAddress("127.0.0.1", 4567));
+                    client.connect(new InetSocketAddress("127.0.0.1", 4567), true);
                     TestService service = client.getService(TestService.class);
                     while(true) {
                         String hello = service.say("Hello");
-                        if(null == hello) {
-                            System.out.println("null");
-                        } else {
+                        if(null != hello) {
                             System.out.println(hello);
                         }
                         TimeUnit.SECONDS.sleep(1);

@@ -2,6 +2,7 @@ package com.github.sd4324530.fastrpc.client;
 
 import com.github.sd4324530.fastrpc.core.channel.FastChannel;
 import com.github.sd4324530.fastrpc.core.channel.IChannel;
+import com.github.sd4324530.fastrpc.core.exception.FastrpcException;
 import com.github.sd4324530.fastrpc.core.message.RequestMessage;
 import com.github.sd4324530.fastrpc.core.message.ResponseMessage;
 import com.github.sd4324530.fastrpc.core.message.ResultCode;
@@ -32,10 +33,11 @@ public final class FastRpcClient implements IClient {
     private       int         threadSize = Runtime.getRuntime().availableProcessors() * 2;
     private       ISerializer serializer = new JdkSerializer();
     private       long        timeout    = 5000;
-    private       boolean     retry      = false;
+    private       boolean     retry      = true;
 
     private AsynchronousChannelGroup group;
     private IChannel                 channel;
+    private SocketAddress            socketAddress;
 
 
     @Override
@@ -51,7 +53,20 @@ public final class FastRpcClient implements IClient {
         asynchronousSocketChannel.setOption(StandardSocketOptions.SO_REUSEADDR, true);
         asynchronousSocketChannel.setOption(StandardSocketOptions.SO_KEEPALIVE, true);
         this.retry = retry;
-        asynchronousSocketChannel.connect(address).get(5, TimeUnit.SECONDS);
+        this.socketAddress = address;
+        try {
+            asynchronousSocketChannel.connect(address).get(5, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            log.error("连接失败");
+            log.warn("是否重试:{}", this.retry);
+            if(this.retry) {
+                retry();
+            }
+        } catch (TimeoutException e) {
+            e.printStackTrace();
+        }
         this.channel = new FastChannel(asynchronousSocketChannel, this.serializer, timeout);
     }
 
@@ -72,7 +87,7 @@ public final class FastRpcClient implements IClient {
     }
 
     @Override
-    public IClient setTimeout(final long timeout) {
+    public IClient timeout(final long timeout) {
         if (0 < timeout) {
             this.timeout = timeout;
         } else {
@@ -120,8 +135,19 @@ public final class FastRpcClient implements IClient {
             return this.channel.read(ResponseMessage.class);
         } catch (final Exception e) {
             log.error("Rpc调用异常:", e);
-            if(e instanceof ExecutionException) {
-                log.warn("");
+            log.debug("是否重试:" + this.retry);
+            if (e instanceof FastrpcException) {
+                if(!this.retry) {
+                    if (this.channel.isOpen()) {
+                        try {
+                            this.channel.close();
+                        } catch (IOException ignored) {
+                        }
+                    }
+                    return null;
+                }
+                retry();
+                return invoke(requestMessage);
             }
             final ResponseMessage responseMessage = new ResponseMessage();
             responseMessage.setSeq(requestMessage.getSeq());
@@ -135,5 +161,23 @@ public final class FastRpcClient implements IClient {
     public void close() throws IOException {
         this.channel.close();
         this.group.shutdownNow();
+    }
+
+    private void retry() {
+        try {
+            TimeUnit.SECONDS.sleep(1);
+            if (null != this.channel && this.channel.isOpen()) {
+                this.channel.close();
+            }
+            log.debug("连接:{}", this.socketAddress.toString());
+            AsynchronousSocketChannel asynchronousSocketChannel = AsynchronousSocketChannel.open(this.group);
+            asynchronousSocketChannel.setOption(StandardSocketOptions.TCP_NODELAY, true);
+            asynchronousSocketChannel.setOption(StandardSocketOptions.SO_REUSEADDR, true);
+            asynchronousSocketChannel.setOption(StandardSocketOptions.SO_KEEPALIVE, true);
+            asynchronousSocketChannel.connect(this.socketAddress).get(5, TimeUnit.SECONDS);
+            this.channel = new FastChannel(asynchronousSocketChannel, this.serializer, timeout);
+        } catch (Exception e) {
+            retry();
+        }
     }
 }

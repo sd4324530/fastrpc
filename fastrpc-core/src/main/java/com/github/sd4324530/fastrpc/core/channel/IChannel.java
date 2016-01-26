@@ -5,7 +5,9 @@ import com.github.sd4324530.fastrpc.core.message.RequestMessage;
 import com.github.sd4324530.fastrpc.core.message.ResponseMessage;
 
 import java.io.Closeable;
+import java.io.IOException;
 import java.io.Serializable;
+import java.net.SocketAddress;
 
 /**
  * @author peiyu
@@ -25,6 +27,8 @@ public interface IChannel extends Closeable, Serializable {
      * @return 是否开启
      */
     boolean isOpen();
+
+//    SocketAddress remoteAddress() throws IOException;
 
     /**
      * 读取数据

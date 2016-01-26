@@ -61,9 +61,9 @@ public interface IClient extends Closeable {
      * 设置请求超时时间,单位毫秒
      *
      * @param timeout 超时时间
-     * @return
+     * @return RPC客户端接口对象
      */
-    IClient setTimeout(long timeout);
+    IClient timeout(long timeout);
 
     /**
      * 得到RPC接口实例,可以像调用本地方法那样调用RPC接口方法
