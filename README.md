@@ -2,7 +2,7 @@
 基于java AIO实现的RPC调用框架
 
 ###  RPC服务端初始化
-```
+```Java
 public static void main(String[] args) throws Exception {
         new FastRpcServer()
                 .threadSize(20)
@@ -11,7 +11,7 @@ public static void main(String[] args) throws Exception {
                 .start();
     }
 ```
-```
+```Java
 public class TestService implements ITestService {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
@@ -51,7 +51,7 @@ public class TestService implements ITestService {
 }
 ```
 ### RPC客户端初始化
-```
+```Java
 public static void main(String[] args) {
         try(IClient client = new FastRpcClient()) {
             client.connect(new InetSocketAddress("127.0.0.1", 4567));
@@ -63,8 +63,7 @@ public static void main(String[] args) {
         }
     }
 ```
-
-```
+```Java
 public interface ITestService {
 
     String say(String what);
