@@ -161,7 +161,6 @@ public final class FastRpcServer implements IServer {
                 channel.write(responseMessage);
             }
         } catch (Exception e) {
-//            log.error("", e);
             if(e instanceof FastrpcException) {
                 if(channel.isOpen()) {
                     try {

@@ -56,16 +56,14 @@ public final class FastRpcClient implements IClient {
         this.socketAddress = address;
         try {
             asynchronousSocketChannel.connect(address).get(5, TimeUnit.SECONDS);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        } catch (InterruptedException | TimeoutException e) {
+            log.error("", e);
         } catch (ExecutionException e) {
             log.error("连接失败");
             log.warn("是否重试:{}", this.retry);
             if(this.retry) {
                 retry();
             }
-        } catch (TimeoutException e) {
-            e.printStackTrace();
         }
         this.channel = new FastChannel(asynchronousSocketChannel, this.serializer, timeout);
     }
