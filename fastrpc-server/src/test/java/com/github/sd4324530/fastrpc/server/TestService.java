@@ -16,11 +16,6 @@ public class TestService implements ITestService {
     public String say(String what) {
         String result = "say " + what;
         log.debug(result);
-//        try {
-//            TimeUnit.SECONDS.sleep(8);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
         return result;
     }
 

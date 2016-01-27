@@ -3,7 +3,7 @@ package com.github.sd4324530.fastrpc.client;
 /**
  * @author peiyu
  */
-public interface TestService {
+public interface ITestService {
 
     String say(String what);
 
