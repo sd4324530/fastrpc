@@ -1,13 +1,9 @@
 package com.github.sd4324530.fastrpc.core.channel;
 
 import com.github.sd4324530.fastrpc.core.message.IMessage;
-import com.github.sd4324530.fastrpc.core.message.RequestMessage;
-import com.github.sd4324530.fastrpc.core.message.ResponseMessage;
 
 import java.io.Closeable;
-import java.io.IOException;
 import java.io.Serializable;
-import java.net.SocketAddress;
 
 /**
  * @author peiyu

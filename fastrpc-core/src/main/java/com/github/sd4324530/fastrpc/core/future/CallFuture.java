@@ -1,9 +1,11 @@
 package com.github.sd4324530.fastrpc.core.future;
 
+import com.github.sd4324530.fastrpc.core.exception.FastrpcException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 请求句柄
@@ -11,7 +13,6 @@ import java.util.concurrent.Semaphore;
  */
 public class CallFuture<T> {
 
-//    private final Log log = LogFactory.get(getClass());
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     private T value;
@@ -29,7 +30,9 @@ public class CallFuture<T> {
 
     public T getValue() {
         try {
-            this.semaphore.acquire();
+            if(!this.semaphore.tryAcquire(5, TimeUnit.SECONDS)) {
+                throw new FastrpcException("RPC调用超时，5秒没有返回结果..");
+            }
         } catch (InterruptedException e) {
             log.error("阻塞异常", e);
         }

@@ -66,16 +66,8 @@ public class FastChannel implements IChannel {
                 this.channel.read(message).get();
                 message.flip();
                 return this.serializer.encoder(message.array(), messageClazz);
-            } catch (TimeoutException e) {
+            } catch (TimeoutException | ExecutionException e) {
                 throw new FastrpcException(e);
-            } catch (ExecutionException e) {
-                throw new FastrpcException(e);
-//                if(this.channel.isOpen()) {
-//                    try {
-//                        this.channel.close();
-//                    } catch (IOException ignored) {
-//                    }
-//                }
             } catch (Exception e) {
                 log.error("读取数据异常", e);
             }
