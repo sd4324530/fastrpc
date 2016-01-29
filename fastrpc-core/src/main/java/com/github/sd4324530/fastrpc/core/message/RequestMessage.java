@@ -3,6 +3,8 @@ package com.github.sd4324530.fastrpc.core.message;
 import java.util.Arrays;
 
 /**
+ * PRC请求对象
+ *
  * @author peiyu
  */
 public class RequestMessage implements IMessage {

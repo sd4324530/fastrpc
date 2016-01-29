@@ -27,7 +27,7 @@ public class FastChannel implements IChannel {
     private final long                      timeout;
 
 
-    public FastChannel(AsynchronousSocketChannel channel, ISerializer serializer, long timeout) {
+    public FastChannel(final AsynchronousSocketChannel channel, final ISerializer serializer, final long timeout) {
         this.channel = channel;
         this.serializer = serializer;
         this.timeout = timeout;
@@ -44,31 +44,26 @@ public class FastChannel implements IChannel {
         return this.channel.isOpen();
     }
 
-//    @Override
-//    public SocketAddress remoteAddress() throws IOException {
-//        return this.channel.getRemoteAddress();
-//    }
-
     @Override
-    public <M extends IMessage> M read(Class<M> messageClazz) {
+    public <M extends IMessage> M read(final Class<M> messageClazz) {
         if (this.isOpen()) {
-            ByteBuffer messageLength = ByteBuffer.allocate(4);
+            final ByteBuffer messageLength = ByteBuffer.allocate(4);
             try {
-                Integer integer = this.channel.read(messageLength).get(timeout, TimeUnit.MILLISECONDS);
+                final Integer integer = this.channel.read(messageLength).get(timeout, TimeUnit.MILLISECONDS);
                 if (-1 == integer) {
                     log.debug("关闭连接 {} <-> {}", this.channel.getLocalAddress(), this.channel.getRemoteAddress());
                     close();
                     return null;
                 }
                 messageLength.flip();
-                int length = messageLength.getInt();
-                ByteBuffer message = ByteBuffer.allocate(length);
+                final int length = messageLength.getInt();
+                final ByteBuffer message = ByteBuffer.allocate(length);
                 this.channel.read(message).get();
                 message.flip();
                 return this.serializer.encoder(message.array(), messageClazz);
-            } catch (TimeoutException | ExecutionException e) {
+            } catch (final TimeoutException | ExecutionException e) {
                 throw new FastrpcException(e);
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 log.error("读取数据异常", e);
             }
         }
@@ -76,24 +71,24 @@ public class FastChannel implements IChannel {
     }
 
     @Override
-    public void write(IMessage message) {
+    public void write(final IMessage message) {
         try {
             if (this.isOpen()) {
-                byte[] bytes = this.serializer.decoder(message);
-                ByteBuffer byteBuffer = ByteBuffer.allocate(4 + bytes.length);
+                final byte[] bytes = this.serializer.decoder(message);
+                final ByteBuffer byteBuffer = ByteBuffer.allocate(4 + bytes.length);
                 byteBuffer.putInt(bytes.length);
                 byteBuffer.put(bytes);
                 byteBuffer.flip();
-                Integer integer = this.channel.write(byteBuffer).get(timeout, TimeUnit.MILLISECONDS);
+                final Integer integer = this.channel.write(byteBuffer).get(timeout, TimeUnit.MILLISECONDS);
                 if (-1 == integer) {
                     log.warn("连接断了....");
                     log.warn("open:{}", this.isOpen());
                 }
             }
-        } catch (ExecutionException e) {
+        } catch (final ExecutionException e) {
             log.warn("连接断了....");
             throw new FastrpcException(e);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             log.error("写出数据异常", e);
             log.warn("open:{}", this.isOpen());
         }

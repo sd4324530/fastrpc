@@ -56,12 +56,12 @@ public final class FastRpcClient implements IClient {
         this.socketAddress = address;
         try {
             asynchronousSocketChannel.connect(address).get(5, TimeUnit.SECONDS);
-        } catch (InterruptedException | TimeoutException e) {
+        } catch (final InterruptedException | TimeoutException e) {
             log.error("", e);
-        } catch (ExecutionException e) {
+        } catch (final ExecutionException e) {
             log.error("连接失败");
             log.warn("是否重试:{}", this.retry);
-            if(this.retry) {
+            if (this.retry) {
                 retry();
             }
         }
@@ -135,7 +135,7 @@ public final class FastRpcClient implements IClient {
             log.error("Rpc调用异常:", e);
             log.debug("是否重试:" + this.retry);
             if (e instanceof FastrpcException) {
-                if(!this.retry) {
+                if (!this.retry) {
                     if (this.channel.isOpen()) {
                         try {
                             this.channel.close();
@@ -168,13 +168,13 @@ public final class FastRpcClient implements IClient {
                 this.channel.close();
             }
             log.debug("连接:{}", this.socketAddress.toString());
-            AsynchronousSocketChannel asynchronousSocketChannel = AsynchronousSocketChannel.open(this.group);
+            final AsynchronousSocketChannel asynchronousSocketChannel = AsynchronousSocketChannel.open(this.group);
             asynchronousSocketChannel.setOption(StandardSocketOptions.TCP_NODELAY, true);
             asynchronousSocketChannel.setOption(StandardSocketOptions.SO_REUSEADDR, true);
             asynchronousSocketChannel.setOption(StandardSocketOptions.SO_KEEPALIVE, true);
             asynchronousSocketChannel.connect(this.socketAddress).get(5, TimeUnit.SECONDS);
             this.channel = new FastChannel(asynchronousSocketChannel, this.serializer, timeout);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             retry();
         }
     }

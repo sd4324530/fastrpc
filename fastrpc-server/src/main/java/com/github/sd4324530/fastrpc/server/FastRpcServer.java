@@ -110,7 +110,7 @@ public final class FastRpcServer implements IServer {
 
         this.channel.accept(null, new CompletionHandler<AsynchronousSocketChannel, Void>() {
             @Override
-            public void completed(AsynchronousSocketChannel result, Void attachment) {
+            public void completed(final AsynchronousSocketChannel result, final Void attachment) {
                 channel.accept(null, this);
                 String localAddress = null;
                 String remoteAddress = null;
@@ -118,10 +118,10 @@ public final class FastRpcServer implements IServer {
                     localAddress = result.getLocalAddress().toString();
                     remoteAddress = result.getRemoteAddress().toString();
                     log.debug("创建连接 {} <-> {}", localAddress, remoteAddress);
-                } catch (IOException e) {
+                } catch (final IOException e) {
                     log.error("", e);
                 }
-                IChannel channel = new FastChannel(result, serializer, timeout);
+                final IChannel channel = new FastChannel(result, serializer, timeout);
                 while (channel.isOpen()) {
                     handler(channel);
                 }
@@ -129,11 +129,11 @@ public final class FastRpcServer implements IServer {
             }
 
             @Override
-            public void failed(Throwable exc, Void attachment) {
+            public void failed(final Throwable exc, final Void attachment) {
                 log.error("通信失败", exc);
                 try {
                     close();
-                } catch (IOException e) {
+                } catch (final IOException e) {
                     log.error("关闭通道异常", e);
                 }
             }
@@ -160,12 +160,12 @@ public final class FastRpcServer implements IServer {
                 responseMessage.setResponseObject(response);
                 channel.write(responseMessage);
             }
-        } catch (Exception e) {
-            if(e instanceof FastrpcException) {
-                if(channel.isOpen()) {
+        } catch (final Exception e) {
+            if (e instanceof FastrpcException) {
+                if (channel.isOpen()) {
                     try {
                         channel.close();
-                    } catch (IOException ignored) {
+                    } catch (final IOException ignored) {
                     }
                 }
             }

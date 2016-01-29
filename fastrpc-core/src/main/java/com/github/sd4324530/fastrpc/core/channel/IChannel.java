@@ -24,8 +24,6 @@ public interface IChannel extends Closeable, Serializable {
      */
     boolean isOpen();
 
-//    SocketAddress remoteAddress() throws IOException;
-
     /**
      * 读取数据
      *

@@ -1,6 +1,8 @@
 package com.github.sd4324530.fastrpc.core.message;
 
 /**
+ * RPC响应对象
+ *
  * @author peiyu
  */
 public class ResponseMessage implements IMessage {
