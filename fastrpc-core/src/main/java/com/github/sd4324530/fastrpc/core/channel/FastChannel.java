@@ -15,6 +15,11 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 /**
+ * 通信通道
+ * 消息报文规则
+ * 前4字节表示本次报文长度
+ * 根据此长度,读取剩余的数据报文
+ *
  * @author peiyu
  */
 public class FastChannel implements IChannel {
