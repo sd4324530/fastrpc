@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.InetSocketAddress;
 import java.net.StandardSocketOptions;
@@ -22,7 +23,10 @@ import java.nio.channels.CompletionHandler;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * RPC服务端实现
@@ -31,10 +35,11 @@ import java.util.concurrent.Executors;
  */
 public final class FastRpcServer implements IServer {
 
-    private final Logger      log        = LoggerFactory.getLogger(getClass());
-    private       int         threadSize = Runtime.getRuntime().availableProcessors() * 2;
-    private       ISerializer serializer = new JdkSerializer();
-    private       long        timeout    = 5000;
+    private final Logger          log             = LoggerFactory.getLogger(getClass());
+    private       int             threadSize      = Runtime.getRuntime().availableProcessors() * 2;
+    private       ISerializer     serializer      = new JdkSerializer();
+    private       long            timeout         = 5000;
+    private final ExecutorService executorService = Executors.newFixedThreadPool(10000);
 
     private       int                             port;
     private       AsynchronousChannelGroup        group;
@@ -153,12 +158,18 @@ public final class FastRpcServer implements IServer {
                 final String serverName = request.getServerName();
                 final Object obj = this.serverMap.get(serverName);
                 final Method method = obj.getClass().getMethod(request.getMethodName(), request.getArgsClassTypes());
-                final Object response = method.invoke(obj, request.getArgs());
-                final ResponseMessage responseMessage = new ResponseMessage();
-                responseMessage.setSeq(request.getSeq());
-                responseMessage.setResultCode(ResultCode.SUCCESS);
-                responseMessage.setResponseObject(response);
-                channel.write(responseMessage);
+                this.executorService.execute(() -> {
+                    Object response = null;
+                    try {
+                        response = method.invoke(obj, request.getArgs());
+                    } catch (final Exception ignored) {
+                    }
+                    final ResponseMessage responseMessage = new ResponseMessage();
+                    responseMessage.setSeq(request.getSeq());
+                    responseMessage.setResultCode(ResultCode.SUCCESS);
+                    responseMessage.setResponseObject(response);
+                    channel.write(responseMessage);
+                });
             }
         } catch (final Exception e) {
             if (e instanceof FastrpcException) {
