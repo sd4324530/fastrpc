@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.github.sd4324530</groupId>
     <artifactId>fastrpc</artifactId>
-    <version>0.1-SNAPSHOT</version>
+    <version>0.1</version>
     <modules>
         <module>fastrpc-core</module>
         <module>fastrpc-server</module>
@@ -31,7 +29,7 @@
         <connection>scm:git:git://github.com/sd4324530/fastrpc.git</connection>
         <developerConnection>scm:git:git@github.com:sd4324530/fastrpc.git</developerConnection>
         <url>https://github.com/sd4324530/fastrpc.git</url>
-        <tag>HEAD</tag>
+        <tag>v0.1</tag>
     </scm>
 
     <developers>
