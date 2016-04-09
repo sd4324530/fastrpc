@@ -50,7 +50,7 @@
 
 
     <build>
-        <finalName>fastnetty</finalName>
+        <finalName>fastrpc</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
