@@ -4,7 +4,7 @@
 
     <groupId>com.github.sd4324530</groupId>
     <artifactId>fastrpc</artifactId>
-    <version>0.1</version>
+    <version>0.2-SNAPSHOT</version>
     <modules>
         <module>fastrpc-core</module>
         <module>fastrpc-server</module>
@@ -29,7 +29,7 @@
         <connection>scm:git:git://github.com/sd4324530/fastrpc.git</connection>
         <developerConnection>scm:git:git@github.com:sd4324530/fastrpc.git</developerConnection>
         <url>https://github.com/sd4324530/fastrpc.git</url>
-        <tag>v0.1</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <developers>
