@@ -77,3 +77,19 @@ public interface ITestService {
     User doUser(User user);
 }
 ```
+
+Maven 项目引入
+==========
+```xml
+<dependency>
+    <groupId>com.github.sd4324530</groupId>
+    <artifactId>fastrpc-server</artifactId>
+    <version>0.1</version>
+</dependency>
+
+<dependency>
+    <groupId>com.github.sd4324530</groupId>
+    <artifactId>fastrpc-client</artifactId>
+    <version>0.1</version>
+</dependency>
+```
